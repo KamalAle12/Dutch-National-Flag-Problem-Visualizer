@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dutch National Flag Problem Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .input-container {
+            margin-bottom: 20px;
+        }
+        
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 300px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        #arrayContainer {
+            display: flex;
+        }
+        
+        .box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            margin: 5px;
+            transition: transform 0.3s ease;
+            border-radius: 8px;
+            opacity: 0.9;
+        }
+        
+        .red {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .white {
+            background-color: #ecf0f1;
+            color: black;
+            border: 1px solid black;
+        }
+        
+        .blue {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        #explanation {
+            width: 60%;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: justify;
+            display: none;
+            /* Hidden initially */
+            opacity: 0;
+            transition: opacity 1s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        #explanation.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        ul {
+            list-style-type: square;
+            margin-left: 20px;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .log {
+            margin-top: 10px;
+            background-color: #dfe6e9;
+            padding: 10px;
+            border-left: 4px solid #74b9ff;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>75. Sort Colors: Dutch National Flag Problem Visualizer</h1>
+
+    <div class="input-container">
+        <label for="inputArray">Enter the array (only 0s, 1s, and 2s):</label>
+        <input type="text" id="inputArray" placeholder="e.g., 2,0,2,1,1,0">
+        <button id="startButton">Start Visualization</button>
+        <button id="resetButton">Reset</button>
+    </div>
+
+    <div class="container">
+        <div id="arrayContainer"></div>
+    </div>
+
+    <div id="explanation">
+        <h2>Understanding the Dutch National Flag Problem</h2>
+        <p>
+            The Dutch National Flag problem involves sorting an array containing three distinct values: 0 (red), 1 (white), and 2 (blue). The goal is to sort the array with all elements of the same color adjacent in the order red, white, and blue.
+        </p>
+        <p>This visualization will help you understand how the sorting algorithm works, step by step:</p>
+        <ul>
+            <li><strong>i (current)</strong>: Tracks the current element being processed.</li>
+            <li><strong>j (left)</strong>: Marks the position for the next red (0).</li>
+            <li><strong>k (right)</strong>: Marks the position for the next blue (2).</li>
+        </ul>
+        <div id="explanationLog"></div>
+    </div>
+
+    <script>
+        const startButton = document.getElementById("startButton");
+        const resetButton = document.getElementById("resetButton");
+        const inputArray = document.getElementById("inputArray");
+        const arrayContainer = document.getElementById("arrayContainer");
+        const explanation = document.getElementById("explanation");
+        const explanationLog = document.getElementById("explanationLog");
+
+        // Function to render the array visually
+        function renderArray(arr) {
+            arrayContainer.innerHTML = '';
+            arr.forEach((num, index) => {
+                const div = document.createElement('div');
+                div.classList.add('box');
+                div.innerText = num;
+                div.style.transform = `scale(1.1)`; // Cool scaling effect
+                if (num === 0) div.classList.add('red');
+                if (num === 1) div.classList.add('white');
+                if (num === 2) div.classList.add('blue');
+                arrayContainer.appendChild(div);
+            });
+        }
+
+        // Function to swap two elements in the array
+        function swap(arr, i, j) {
+            const temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+
+        // Dutch National Flag sorting algorithm with explanations
+        function sortColors(nums) {
+            let i = 0;
+            let j = 0;
+            let k = nums.length - 1;
+
+            const intervalId = setInterval(() => {
+                if (i > k) {
+                    clearInterval(intervalId); // Stop the visualization when sorting is done
+                    startButton.disabled = false;
+                    explanationLog.innerHTML += `<div class="log">Sorting completed!</div>`;
+                    return;
+                }
+
+                if (nums[i] === 0) {
+                    explanationLog.innerHTML += `<div class="log">Swapping 0 from index ${i} to ${j}</div>`;
+                    swap(nums, i, j);
+                    i++;
+                    j++;
+                } else if (nums[i] === 1) {
+                    explanationLog.innerHTML += `<div class="log">1 at index ${i}, moving to next element.</div>`;
+                    i++;
+                } else if (nums[i] === 2) {
+                    explanationLog.innerHTML += `<div class="log">Swapping 2 from index ${i} to ${k}</div>`;
+                    swap(nums, i, k);
+                    k--;
+                }
+
+                renderArray(nums);
+            }, 1000); // 1 second delay for visualization
+        }
+
+        // Event listener for start button
+        startButton.addEventListener("click", () => {
+            const input = inputArray.value.split(',').map(Number);
+            if (input.every(num => num === 0 || num === 1 || num === 2)) {
+                startButton.disabled = true;
+                explanation.classList.add("show"); // Show explanation when visualizing starts
+                renderArray(input);
+                explanationLog.innerHTML = ''; // Reset explanation log
+                sortColors(input);
+            } else {
+                alert('Please enter a valid array with only 0s, 1s, and 2s.');
+            }
+        });
+
+        // Event listener for reset button
+        resetButton.addEventListener("click", () => {
+            inputArray.value = '';
+            arrayContainer.innerHTML = '';
+            explanationLog.innerHTML = '';
+            explanation.classList.remove("show");
+            startButton.disabled = false;
+        });
+    </script>
+</body>
+
+</html>
